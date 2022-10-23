@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script>
+			const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor("#e5e5e5");
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+
+            window.addEventListener('resize', () => {
+                renderer.setSize(window.innerWidth,window.innerHeight);
+                camera.aspect = window.innerWidth/window.innerHeight;
+                camera.updateProjectionMatrix();
+            })
+            
+            var light = new THREE.PointLight(0xFFFFFF,1,500);
+            light.position.set(10,0,25);
+            scene.add(light);
+
+            const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+            const material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+            const cube = new THREE.Mesh( geometry, material );
+            scene.add( cube );
+
+            const geometry2 = new THREE.SphereGeometry( 0.5, 32, 32 );
+            const material2 = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+            const sphere = new THREE.Mesh( geometry2, material2 );
+            sphere.position.x = 2;
+            scene.add( sphere );
+
+            const geometry3 = new THREE.ConeGeometry( 0.5, 2, 32 );
+            const material3 = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+            const cone = new THREE.Mesh( geometry3, material3 );
+            cone.position.x = -2;
+            scene.add( cone );
+
+            const x = 0, y = 0;
+
+            const diamondShape = new THREE.Shape();
+            diamondShape.moveTo( x + 0.7, y + 1 );
+            diamondShape.lineTo( x + 1, y + 0.7 );
+            diamondShape.lineTo( x - 0, y - 0.5 );
+            diamondShape.lineTo( x - 1, y + 0.7 );
+            diamondShape.lineTo( x - 0.7, y + 1) ;
+            diamondShape.lineTo( x + 0.7, y + 1 );
+
+            const geometry4 = new THREE.ShapeGeometry(diamondShape);
+            const material4 = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+            const diamond = new THREE.Mesh(geometry4,material4);
+            diamond.position.y = -2;
+            scene.add(diamond);
+
+
+            camera.position.z = 5;
+
+            function animate() {
+                requestAnimationFrame( animate );
+
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+
+                sphere.rotation.x += 0.01;
+                sphere.rotation.y += 0.01;
+
+                cone.rotation.x += 0.01;
+                cone.rotation.y += 0.01;
+
+                diamond.rotation.x += 0.01;
+                diamond.rotation.y += 0.01;
+
+                renderer.render( scene, camera );
+            }
+            animate();
+		</script>
+	</body>
+</html>
