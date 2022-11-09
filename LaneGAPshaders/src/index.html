@@ -40,7 +40,7 @@
         uniform vec2 u_res;
         void main(){
             //gl_FragColor = vec4(1.0, (gl_FragCoord.xy/u_res).x, gl_FragCoord.xy/u_res).y, 1.0);
-            gl_FragColor = vec4(0.2, abs(sin(u_time)), 1.0, 1.0);
+            gl_FragColor = vec4(0.5, abs(tan(u_time)), 0.5, 1.0);
         }
     </script>
 </body>
