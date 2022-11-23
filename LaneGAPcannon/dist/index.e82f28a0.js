@@ -536,55 +536,99 @@ var _three = require("three");
 var _orbitControlsJs = require("three/examples/jsm/controls/OrbitControls.js");
 var _datGui = require("dat.gui");
 var _cannonEs = require("cannon-es");
+//setup 
 var height = window.innerHeight;
 var width = window.innerWidth;
 const scene = new _three.Scene();
 const camera = new _three.PerspectiveCamera(45, width / height, 0.1, 1000);
-camera.position.set(-10, 30, 30);
+camera.position.set(0, 50, 30);
 const renderer = new _three.WebGLRenderer();
 renderer.setSize(width, height);
 document.body.appendChild(renderer.domElement);
-renderer.shadowMap.enabled = false;
+renderer.shadowMap.enabled = true;
 const orbit = new (0, _orbitControlsJs.OrbitControls)(camera, renderer.domElement);
+const ambientLight = new _three.AmbientLight(0x333333, 0.4);
+scene.add(ambientLight);
+const directionalLight = new _three.DirectionalLight(0xFFFFFF, 0.8);
+scene.add(directionalLight);
+directionalLight.position.set(25, 50, 0);
+directionalLight.castShadow = true;
+const axes = new _three.AxesHelper(20);
+scene.add(axes);
+//variables
+// physics
 const world = new _cannonEs.World({
-    gravity: new _cannonEs.Vec3(0, -1, 0)
+    gravity: new _cannonEs.Vec3(0, -10, 0)
 });
-const planeGeo = new _three.PlaneGeometry(30, 30);
-const planeMat = new _three.MeshBasicMaterial({
-    color: 0x333333,
+const planeGeo = new _three.PlaneGeometry(10, 10);
+const planeMat = new _three.MeshStandardMaterial({
+    color: 0x999999,
     side: _three.DoubleSide
 });
-const plane = new _three.Mesh(planeGeo, planeMat);
-scene.add(plane);
-const groundBody = new _cannonEs.Body({
-    shape: new _cannonEs.Plane(),
-    type: _cannonEs.Body.STATIC
+const ground = new _three.Mesh(planeGeo, planeMat);
+scene.add(ground);
+ground.receiveShadow = true;
+const planePMat = new _cannonEs.Material();
+const planeBody = new _cannonEs.Body({
+    type: _cannonEs.Body.STATIC,
+    shape: new _cannonEs.Box(new _cannonEs.Vec3(5, 5, 0.1)),
+    material: planePMat
 });
-world.addBody(groundBody);
-groundBody.quaternion.setFromEuler(Math.PI / 2, 0, 0);
-const boxGeo = new _three.BoxGeometry(2, 2);
-const boxMat = new _three.MeshBasicMaterial({
-    color: 0xFFFFFF
+planeBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+world.addBody(planeBody);
+const boxGeo = new _three.BoxGeometry(2, 2, 2);
+const boxMat = new _three.MeshStandardMaterial({
+    color: 0x993366
 });
-const box = new _three.Mesh(boxGeo, boxMat);
-scene.add(box);
+const boxMesh = new _three.Mesh(boxGeo, boxMat);
+boxMesh.castShadow = true;
+scene.add(boxMesh);
+const boxPMat = new _cannonEs.Material();
 const boxBody = new _cannonEs.Body({
     shape: new _cannonEs.Box(new _cannonEs.Vec3(1, 1, 1)),
-    mass: 0.5,
-    position: new _cannonEs.Vec3(1, 30, 0),
-    type: _cannonEs.Body.DYNAMIC
+    mass: 1,
+    position: new _cannonEs.Vec3(1, 30, 1),
+    material: boxPMat
 });
 world.addBody(boxBody);
+boxBody.angularVelocity.set(0, 10, 0);
+boxBody.angularDamping = 0.35;
+const ballGeo = new _three.SphereGeometry(1, 30, 30);
+const ballMat = new _three.MeshStandardMaterial({
+    color: 0x113399
+});
+const ballMesh = new _three.Mesh(ballGeo, ballMat);
+ballMesh.castShadow = true;
+scene.add(ballMesh);
+const ballPMat = new _cannonEs.Material();
+const ballBody = new _cannonEs.Body({
+    shape: new _cannonEs.Sphere(0.5),
+    mass: 1,
+    position: new _cannonEs.Vec3(2, 20, 1),
+    material: ballPMat
+});
+world.addBody(ballBody);
+//mouse stuff
+//animattion 
 const timeStep = 1 / 60;
 function animate(time) {
     world.step(timeStep);
-    plane.position.copy(groundBody.position);
-    plane.quaternion.copy(groundBody.quaternion);
-    box.position.copy(boxBody.position);
-    box.quaternion.copy(boxBody.quaternion);
+    ground.position.copy(planeBody.position);
+    ground.quaternion.copy(planeBody.quaternion);
+    boxMesh.position.copy(boxBody.position);
+    boxMesh.quaternion.copy(boxBody.quaternion);
+    ballMesh.position.copy(ballBody.position);
+    ballMesh.quaternion.copy(ballBody.quaternion);
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
+window.addEventListener("resize", function() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+});
 
 },{"three":"ktPTu","three/examples/jsm/controls/OrbitControls.js":"7mqRv","dat.gui":"k3xQk","cannon-es":"HCu3b"}],"ktPTu":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
