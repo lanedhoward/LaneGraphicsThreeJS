@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/main.css">
+    <title>Document</title>
+</head>
+<body>
+    <script src="./js/script.js" type="module"></script>
+    <script id="vertexShader" type="vertex">
+        uniform float u_time;
+        void main(){
+            float newX = position.x + sin(position.y + u_time);
+            float newY = position.y + sin(position.z + u_time);
+            float newZ = position.z + sin(position.x + u_time);
+            vec3 newPos = vec3(newX, newY, newZ);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
+        }
+    </script>
+    <script id="fragmentShader" type="fragment">
+        uniform float u_time;
+        void main(){
+            gl_FragColor = vec4(0.2, sin(u_time), 1.0, 1.0);
+        }
+    </script>
+    <script id="vertexShader2" type="vertex">
+        uniform float u_time;
+        void main(){
+            float newX = position.x - sin(position.y + u_time);
+            float newY = position.y - sin(position.z + u_time);
+            float newZ = position.z - sin(position.x + u_time);
+            vec3 newPos = vec3(newX, newY, newZ);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
+        }
+    </script>
+    <script id="fragmentShader2" type="fragment">
+        uniform float u_time;
+        uniform vec2 u_res;
+        void main(){
+            //gl_FragColor = vec4(1.0, (gl_FragCoord.xy/u_res).x, gl_FragCoord.xy/u_res).y, 1.0);
+            gl_FragColor = vec4(0.5, abs(tan(u_time)), 0.5, 1.0);
+        }
+    </script>
+</body>
+</html>
